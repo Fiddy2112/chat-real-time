@@ -1,13 +1,13 @@
 import React from "react";
 import { Row, Col, Button, Typography } from "antd";
-import { auth, db } from "../../firebase/config";
+import { auth } from "../../firebase/config";
 import {
   FacebookAuthProvider,
   signInWithPopup,
   GoogleAuthProvider,
   signInWithRedirect,
 } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
+
 import { addDocument } from "../../firebase/services";
 
 const { Title } = Typography;

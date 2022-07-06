@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import { Avatar, Button, Typography, Popover, Modal } from "antd";
-import { UserOutlined, MessageOutlined } from "@ant-design/icons";
-import { auth, db } from "../../../firebase/config";
+import { MessageOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Modal, Popover, Typography } from "antd";
 import { signOut } from "firebase/auth";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import { onSnapshot, collection } from "firebase/firestore";
+import { AppContext } from "../../../Context/AppProvider";
+import { AuthContext } from "../../../Context/AuthProvider";
+import { auth } from "../../../firebase/config";
+import AddRoomModal from "./components/Modals/AddRoomModal";
 
 const { Title } = Typography;
 
@@ -39,6 +41,8 @@ const UserInfo = () => {
   const [visible, setVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const { rooms } = useContext(AppContext);
+
   const hide = () => {
     setVisible(false);
   };
@@ -63,16 +67,23 @@ const UserInfo = () => {
     setIsModalVisible(false);
   };
 
-  React.useEffect(() => {
-    const collectionRef = collection(db, "users");
-    onSnapshot(collectionRef, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      console.log({ data, snapshot, docs: snapshot.docs });
-    });
-  }, []);
+  // React.useEffect(() => {
+  //   const collectionRef = collection(db, "users");
+  //   onSnapshot(collectionRef, (snapshot) => {
+  //     const data = snapshot.docs.map((doc) => ({
+  //       ...doc.data(),
+  //       id: doc.id,
+  //     }));
+  //     console.log({ data, snapshot, docs: snapshot.docs });
+  //   });
+  // }, []);
+
+  const data = React.useContext(AuthContext);
+  console.log({ data });
+  const {
+    user: { displayName, email, uid, photoURL },
+  } = data;
+
   return (
     <WrapperStyled>
       <div style={{ display: "flex" }}>
@@ -89,10 +100,16 @@ const UserInfo = () => {
             </Button>
           }
         >
-          <Avatar size="large" icon={<UserOutlined />} />
+          <Avatar size="large" src={photoURL}>
+            {!photoURL ? (
+              displayName?.charAt(0)?.toUpperCase()
+            ) : (
+              <UserOutlined />
+            )}
+          </Avatar>
         </Popover>
 
-        <Typography.Text className="username">AB</Typography.Text>
+        <Typography.Text className="username">{displayName}</Typography.Text>
 
         <div>
           <Title level={2} className="title">
@@ -104,16 +121,12 @@ const UserInfo = () => {
         style={{ fontSize: "20px ", paddingTop: "14px", color: "#000" }}
         onClick={showModal}
       />
-      <Modal
-        title="Basic Modal"
+      <AddRoomModal
+        title="Create Room"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
-      >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
+      />
     </WrapperStyled>
   );
 };

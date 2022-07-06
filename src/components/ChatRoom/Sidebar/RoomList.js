@@ -1,15 +1,21 @@
 import { Collapse, Typography } from "antd";
 import React from "react";
+import { AppContext } from "../../../Context/AppProvider";
 
 const { Panel } = Collapse;
 
 const RoomList = () => {
+  const { rooms } = React.useContext(AppContext);
   return (
-    <Collapse defaultActiveKey={["1"]}>
+    <Collapse
+      bordered={false}
+      defaultActiveKey={["1"]}
+      style={{ display: "flex", flexDirection: "column" }}
+    >
       <Panel header="List Room" key="1">
-        <Typography.Link>Room 1</Typography.Link>
-        <Typography.Link>Room 2</Typography.Link>
-        <Typography.Link>Room 3</Typography.Link>
+        {rooms.map((room) => (
+          <Typography.Link key={room.id}>{room.name}</Typography.Link>
+        ))}
       </Panel>
     </Collapse>
   );
